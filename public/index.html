@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Wild Isle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<canvas id="world"></canvas>
+
+<!-- Décor des menus : coucher de soleil sur l'île -->
+<div id="menu-bg" aria-hidden="true">
+  <svg viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#0b1020"/><stop offset="0.45" stop-color="#3a1630"/><stop offset="0.72" stop-color="#c2410c"/><stop offset="0.8" stop-color="#f59e0b"/>
+      </linearGradient>
+      <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#7c2d12"/><stop offset="0.25" stop-color="#1e1b2e"/><stop offset="1" stop-color="#05070d"/>
+      </linearGradient>
+      <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0" stop-color="#ffe08a"/><stop offset="0.55" stop-color="#ffb000"/><stop offset="1" stop-color="#ffb000" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect width="1280" height="720" fill="url(#sky)"/>
+    <circle cx="640" cy="560" r="230" fill="url(#sun)" opacity="0.9"/>
+    <circle cx="640" cy="560" r="110" fill="#ffd166"/>
+    <rect y="560" width="1280" height="160" fill="url(#sea)"/>
+    <g stroke="#ffb000" stroke-width="3" opacity="0.55" stroke-linecap="round"><path d="M520 580 L 760 580"/><path d="M560 596 L 720 596"/><path d="M590 612 L 690 612"/></g>
+    <path d="M0 560 L 0 470 L 60 452 L 110 470 L 170 430 L 210 448 L 250 400 L 300 452 L 360 470 L 420 560 Z" fill="#0a0d14"/>
+    <path d="M1280 560 L 1280 440 L 1230 420 L 1190 452 L 1140 380 L 1100 430 L 1060 412 L 1010 470 L 960 486 L 900 560 Z" fill="#0a0d14"/>
+    <path d="M1150 560 L 1150 500 Q 1180 470 1210 500 L 1210 560 Z" fill="#1f0d05"/>
+    <path d="M1144 498 L 1216 498" stroke="#3a2210" stroke-width="8"/>
+    <circle cx="1180" cy="520" r="5" fill="#f59e0b"/>
+    <g fill="#0a0d14">
+      <path d="M150 440 Q 140 360 168 290 L 176 292 Q 152 360 160 440 Z"/><path d="M170 292 Q 120 262 70 286 Q 120 278 168 300 Z"/><path d="M170 292 Q 222 252 272 276 Q 220 276 172 300 Z"/><path d="M170 292 Q 150 240 182 214 Q 178 256 176 298 Z"/><path d="M170 292 Q 116 312 98 352 Q 140 316 172 302 Z"/><path d="M170 292 Q 228 308 242 348 Q 204 316 168 302 Z"/>
+      <path d="M1110 400 Q 1104 330 1124 276 L 1132 278 Q 1114 330 1120 400 Z"/><path d="M1126 278 Q 1080 250 1036 272 Q 1082 266 1124 286 Z"/><path d="M1126 278 Q 1172 244 1218 266 Q 1172 266 1128 286 Z"/><path d="M1126 278 Q 1078 298 1064 334 Q 1100 304 1128 288 Z"/><path d="M1126 278 Q 1176 296 1188 332 Q 1154 304 1124 288 Z"/>
+      <path d="M300 452 L 300 410 L 334 386 L 352 400 L 360 392 L 372 410 L 372 452 Z"/>
+    </g>
+    <rect x="322" y="420" width="10" height="12" fill="#f59e0b" opacity="0.7"/>
+    <g class="embers" fill="#ffb000">
+      <circle class="e1" cx="300" cy="640" r="3"/><circle class="e2" cx="520" cy="660" r="2.5"/><circle class="e3" cx="790" cy="650" r="3"/><circle class="e4" cx="980" cy="670" r="2"/><circle class="e5" cx="1100" cy="640" r="3"/>
+    </g>
+  </svg>
+</div>
+
+<!-- ============ CHARGEMENT ============ -->
+<section id="screen-loading" class="screen active">
+  <svg class="emblem" viewBox="-220 -230 440 460" aria-hidden="true">
+    <g transform="rotate(-38)">
+      <path d="M-6 -150 L 6 -150 L 9 60 L 0 78 L -9 60 Z" fill="#cbd5e1" stroke="#0a0d14" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M0 -146 L 0 66" stroke="#ffffff" stroke-width="2" opacity="0.6"/>
+      <rect x="-34" y="-160" width="68" height="14" rx="4" fill="#ffb000" stroke="#0a0d14" stroke-width="6"/>
+      <rect x="-8" y="-206" width="16" height="48" rx="4" fill="#7c2d12" stroke="#0a0d14" stroke-width="6"/>
+      <circle cx="0" cy="-212" r="10" fill="#ffb000" stroke="#0a0d14" stroke-width="6"/>
+    </g>
+    <g transform="rotate(38)">
+      <path d="M0 -180 Q 70 0 0 180" fill="none" stroke="#0a0d14" stroke-width="20" stroke-linecap="round"/>
+      <path d="M0 -180 Q 70 0 0 180" fill="none" stroke="#9a5b2b" stroke-width="10" stroke-linecap="round"/>
+      <path d="M0 -180 L 0 180" stroke="#e2e8f0" stroke-width="3"/>
+    </g>
+  </svg>
+  <div class="logo-block">
+    <div class="logo">WILD ISLE</div>
+    <div class="tagline"><span></span><b data-i18n="tagline">SEUL LE DERNIER SURVIT</b><span></span></div>
+  </div>
+  <div class="loading-bottom">
+    <div class="tip" id="loading-tip"></div>
+    <div class="bar-wrap">
+      <div class="bar-label"><span><span data-i18n="loading">CHARGEMENT</span><span class="dots">...</span></span><b id="loading-pct">0%</b></div>
+      <div class="bar"><div class="bar-fill" id="loading-fill"></div></div>
+    </div>
+  </div>
+  <div class="version">v0.1</div>
+</section>
+
+<!-- ============ ACCUEIL ============ -->
+<section id="screen-home" class="screen">
+  <header class="topbar">
+    <button class="chip" id="home-profile-chip"><canvas id="chip-avatar" width="64" height="64"></canvas><span id="home-name">Joueur</span></button>
+    <div class="status" id="net-status"><i></i><span data-i18n="offline">Connexion…</span></div>
+    <button class="icon-btn" id="btn-settings" aria-label="Paramètres">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </header>
+  <div class="home-main">
+    <div class="home-left">
+      <div class="logo small">WILD ISLE</div>
+      <canvas id="home-hero" width="420" height="420"></canvas>
+    </div>
+    <div class="home-right">
+      <button class="btn big primary" id="btn-play" data-i18n="play">JOUER</button>
+      <button class="btn" id="btn-create" data-i18n="createServer">CRÉER UN SERVEUR</button>
+      <button class="btn ghost" id="btn-profile" data-i18n="profile">PROFIL</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LISTE DES SERVEURS ============ -->
+<section id="screen-browse" class="screen">
+  <div class="panel wide">
+    <div class="panel-head">
+      <button class="back" data-back="home" data-i18n="back">Retour</button>
+      <h2 data-i18n="servers">SERVEURS</h2>
+      <button class="btn small" id="btn-refresh" data-i18n="refresh">Actualiser</button>
+    </div>
+    <div class="tabs" id="browse-tabs">
+      <button class="tab active" data-filter="all" data-i18n="all">Tous</button>
+      <button class="tab" data-filter="ffa" data-i18n="ffa">Chacun pour soi</button>
+      <button class="tab" data-filter="3v3" data-i18n="v3">3 contre 3</button>
+    </div>
+    <ul class="server-list" id="server-list"></ul>
+    <p class="empty" id="server-empty" data-i18n="noServers">Aucun serveur.</p>
+    <button class="btn primary" id="btn-create-2" data-i18n="createServer">CRÉER UN SERVEUR</button>
+  </div>
+</section>
+
+<!-- ============ SALON ============ -->
+<section id="screen-room" class="screen">
+  <div class="panel wide">
+    <div class="panel-head">
+      <button class="back" id="btn-leave-room" data-i18n="leave">Quitter</button>
+      <h2 id="room-title">Serveur</h2>
+      <span class="pill" id="room-mode"></span>
+    </div>
+    <div id="room-players"></div>
+    <div class="room-actions">
+      <button class="btn ghost" id="btn-switch-team" data-i18n="switchTeam">Changer d’équipe</button>
+      <button class="btn big primary" id="btn-start" data-i18n="startGame">LANCER LA PARTIE</button>
+      <p class="muted" id="room-wait" data-i18n="waitingHost">En attente…</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROFIL ============ -->
+<section id="screen-profile" class="screen">
+  <div class="panel wide profile-panel">
+    <div class="panel-head">
+      <button class="back" data-back="home" data-i18n="back">Retour</button>
+      <h2 data-i18n="profile">PROFIL</h2>
+      <button class="btn small primary" id="btn-save-profile" data-i18n="save">Enregistrer</button>
+    </div>
+    <div class="profile-body">
+      <div class="profile-preview"><canvas id="profile-canvas" width="360" height="360"></canvas></div>
+      <div class="profile-options">
+        <label class="field"><span data-i18n="name">Nom</span><input id="pf-name" maxlength="16" autocomplete="off"></label>
+        <div class="field"><span data-i18n="gender">Personnage</span>
+          <div class="seg" id="pf-gender"><button data-v="m" data-i18n="boy">Garçon</button><button data-v="f" data-i18n="girl">Fille</button></div>
+        </div>
+        <div class="field"><span data-i18n="skin">Peau</span><div class="swatches" id="pf-skin"></div></div>
+        <div class="field"><span data-i18n="hair">Cheveux</span><div class="choices" id="pf-hair"></div></div>
+        <div class="field"><span data-i18n="hairColor">Couleur des cheveux</span><div class="swatches" id="pf-hairC"></div></div>
+        <div class="field"><span data-i18n="outfit">Tenue</span><div class="choices" id="pf-outfit"></div></div>
+        <div class="field"><span data-i18n="accessory">Accessoire</span><div class="choices" id="pf-acc"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PARAMÈTRES ============ -->
+<section id="screen-settings" class="screen">
+  <div class="panel">
+    <div class="panel-head">
+      <button class="back" id="btn-settings-back" data-i18n="back">Retour</button>
+      <h2 data-i18n="settings">PARAMÈTRES</h2>
+      <span></span>
+    </div>
+    <div class="field"><span data-i18n="language">Langue</span>
+      <div class="seg" id="set-lang"><button data-v="fr">Français</button><button data-v="en">English</button><button data-v="pt">Português</button></div>
+    </div>
+    <div class="field"><span data-i18n="sound">Son</span>
+      <div class="row"><div class="seg" id="set-sound"><button data-v="1" data-i18n="soundOn">Activé</button><button data-v="0" data-i18n="soundOff">Coupé</button></div>
+      <input type="range" id="set-volume" min="0" max="1" step="0.05" aria-label="Volume"></div>
+    </div>
+    <div class="field" id="keys-field"><span data-i18n="controls">Touches</span>
+      <div id="key-list"></div>
+      <p class="muted small" data-i18n="mouseHelp"></p>
+      <button class="btn small ghost" id="btn-reset-keys" data-i18n="resetKeys">Touches par défaut</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JEU (interface) ============ -->
+<section id="hud" class="hidden">
+  <div class="hud-top-left">
+    <div class="hp"><div class="hp-fill" id="hud-hp"></div><span id="hud-hp-txt">100</span></div>
+    <div class="hud-kills"><span data-i18n="kills">Éliminations</span> <b id="hud-kills">0</b></div>
+  </div>
+  <div class="hud-top-center">
+    <div class="alive"><b id="hud-alive">0</b> <span data-i18n="alive">EN VIE</span></div>
+    <div class="clock"><i id="hud-clock-icon"></i><span id="hud-clock">JOUR</span></div>
+  </div>
+  <div class="hud-top-right">
+    <canvas id="minimap" width="180" height="180"></canvas>
+    <ul id="feed"></ul>
+  </div>
+  <div class="hud-res" id="hud-res"></div>
+  <div class="hud-bottom">
+    <div class="hotbar" id="hotbar"></div>
+  </div>
+  <div class="hud-side-buttons">
+    <button class="round-btn" id="btn-craft"><span data-i18n="craft">FABRIQUER</span><kbd id="kbd-craft">C</kbd></button>
+    <button class="round-btn" id="btn-build"><span data-i18n="build">CONSTRUIRE</span><kbd id="kbd-build">B</kbd></button>
+  </div>
+  <div class="drawer hidden" id="craft-panel"><h3 data-i18n="craft">FABRIQUER</h3><div id="craft-list"></div><button class="btn small ghost close" data-close="craft-panel" data-i18n="close">Fermer</button></div>
+  <div class="drawer hidden" id="build-panel"><h3 data-i18n="build">CONSTRUIRE</h3><div id="build-list"></div><button class="btn small ghost close" data-close="build-panel" data-i18n="close">Fermer</button></div>
+  <div class="build-help hidden" id="build-help"><span id="build-help-txt"></span><button class="x-btn" id="btn-build-cancel" aria-label="Annuler">✕</button></div>
+  <div id="toasts"></div>
+  <div class="center-msg hidden" id="downed-msg"><b data-i18n="downed">À TERRE !</b><span id="downed-txt"></span><div class="mini-bar"><div id="downed-bar"></div></div></div>
+  <div class="center-msg small hidden" id="revive-msg"><span data-i18n="reviving">Relève en cours…</span><div class="mini-bar"><div id="revive-bar"></div></div></div>
+  <div class="spect hidden" id="spect">
+    <b data-i18n="dead">VOUS ÊTES MORT</b>
+    <div class="spect-row"><button class="arrow" id="spect-prev" aria-label="Précédent">◀</button><span><span data-i18n="watching">Vous regardez</span> <b id="spect-name"></b></span><button class="arrow" id="spect-next" aria-label="Suivant">▶</button></div>
+    <small data-i18n="swipeHelp"></small>
+  </div>
+  <!-- commandes tactiles -->
+  <div id="touch" class="hidden">
+    <div class="stick" id="stick-move"><div class="knob"></div></div>
+    <div class="stick right" id="stick-aim"><div class="knob"></div></div>
+    <button class="tbtn" id="t-run">RUN</button>
+    <button class="tbtn" id="t-use">E</button>
+  </div>
+</section>
+
+<!-- Fin de partie -->
+<section id="screen-over" class="screen overlay">
+  <div class="panel">
+    <h1 id="over-title">VICTOIRE !</h1>
+    <p id="over-winners"></p>
+    <table class="stats" id="over-stats"></table>
+    <button class="btn big primary" id="btn-back-room" data-i18n="backToRoom">Retour au salon</button>
+  </div>
+</section>
+
+<!-- Fenêtres -->
+<div class="modal hidden" id="modal-create">
+  <div class="panel">
+    <h2 data-i18n="createServer">CRÉER UN SERVEUR</h2>
+    <label class="field"><span data-i18n="serverName">Nom du serveur</span><input id="cr-name" maxlength="24" autocomplete="off"></label>
+    <div class="field"><span data-i18n="mode">Mode</span><div class="seg" id="cr-mode"><button data-v="ffa" data-i18n="ffa">Chacun pour soi</button><button data-v="3v3" data-i18n="v3">3 contre 3</button></div></div>
+    <div class="field"><span data-i18n="visibility">Visibilité</span><div class="seg" id="cr-vis"><button data-v="pub" data-i18n="pub">Public</button><button data-v="priv" data-i18n="priv">Privé</button></div></div>
+    <label class="field hidden" id="cr-pw-field"><span data-i18n="password">Mot de passe</span><input id="cr-pw" maxlength="32" type="password" autocomplete="new-password"></label>
+    <p class="error" id="cr-err"></p>
+    <div class="row end"><button class="btn ghost" data-close="modal-create" data-i18n="cancel">Annuler</button><button class="btn primary" id="cr-go" data-i18n="create">Créer</button></div>
+  </div>
+</div>
+<div class="modal hidden" id="modal-pw">
+  <div class="panel">
+    <p data-i18n="enterPassword"></p>
+    <label class="field"><span data-i18n="password">Mot de passe</span><input id="pw-input" maxlength="32" type="password" autocomplete="off"></label>
+    <p class="error" id="pw-err"></p>
+    <div class="row end"><button class="btn ghost" data-close="modal-pw" data-i18n="cancel">Annuler</button><button class="btn primary" id="pw-go" data-i18n="join">Rejoindre</button></div>
+  </div>
+</div>
+<div class="modal hidden" id="modal-alert">
+  <div class="panel"><p id="alert-txt"></p><div class="row end"><button class="btn primary" data-close="modal-alert" data-i18n="ok">OK</button></div></div>
+</div>
+<div id="rotate"><span data-i18n="rotate">Tournez votre téléphone pour jouer</span></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/shared/constants.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/draw.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
