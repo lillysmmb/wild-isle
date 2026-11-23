@@ -1,0 +1,16 @@
+{
+  "name": "wild-isle",
+  "version": "0.1.0",
+  "description": "Wild Isle - jeu de survie et de combat multijoueur sur une île",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "socket.io": "^4.8.0"
+  }
+}
